@@ -1,0 +1,12 @@
+.user-table.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    border-top: var(--table-border);
+    border-right: var(--table-border);
+}
+
+.user-table.grid>span {
+    padding: 8px 4px;
+    border-left: var(--table-border);
+    border-bottom: var(--table-border);
+}
