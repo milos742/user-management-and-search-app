@@ -12,6 +12,8 @@ interface AppState {
   filterBy: string[],
   filterTerm: string,
   filterCaseSensitive: boolean,
+  isSortAscending: boolean,
+  sortByProperty: string;
 }
 
 class App extends Component<{}, AppState> {
@@ -19,10 +21,16 @@ class App extends Component<{}, AppState> {
     super(props);
     this.state = {
       isGetUsersLoading: true,
+      // we're getting the users once in this case so it can be modified
+      // if the editing and deleting is done on the backend side, we would get another array of users
+      // and sorting would not work. In that case sorting and filtering data would be kept locally so
+      // after rerendering we would see the same result
       users: [],
       filterBy: [],
       filterTerm: '',
       filterCaseSensitive: false,
+      isSortAscending: false,
+      sortByProperty: null,
     };
   }
 
@@ -40,7 +48,7 @@ class App extends Component<{}, AppState> {
     // visibleUserFields represent fields inside user object.
     // If additional field should be shown or filtered it should be added in array
     const visibleUserFields = [
-      'id',
+      // 'id',
       'name',
       'username',
       'email',
@@ -96,6 +104,42 @@ class App extends Component<{}, AppState> {
       return filtered;
     };
 
+    const handleDelete = (deleteUser: User) => {
+      this.setState({
+        users: this.state.users.filter(user => user.id !== deleteUser.id)
+      });
+    }
+
+    const handleEdit = (newUserData: User) => {
+      this.setState({
+        users: this.state.users.map(user => {
+          if (user.id === newUserData.id) {
+            return newUserData;
+          }
+          return user;
+        })
+      })
+    }
+
+    const sortCompare = (a: User, b: User, property: string, isAscending: boolean) => {
+      if (a[property] < b[property]) {
+        return isAscending ? -1 : 1;
+      }
+      if (a[property] > b[property]) {
+        return isAscending ? 1 : -1;
+      }
+      return 0;
+    }
+
+    const handleSort = (property: string) => {
+      const sortByProperty = this.state.sortByProperty;
+      const isSortAscending = this.state.isSortAscending;
+      const isAscending = sortByProperty === property ? !isSortAscending : true;
+      this.setState({ sortByProperty: property, isSortAscending: isAscending });
+      const sortedUsers = [...this.state.users].sort((a, b) => sortCompare(a, b, property, isAscending));
+      this.setState({ users: sortedUsers })
+    }
+
     return (
       <div className="user-management">
         <header className="user-management__header">
@@ -114,7 +158,7 @@ class App extends Component<{}, AppState> {
         </section>
         <section>
           <div className='user-management__table'>
-            <UserTable users={filteredUsers()} columns={visibleUserFields} />
+            <UserTable users={filteredUsers()} columns={visibleUserFields} onDelete={handleDelete} onEdit={handleEdit} onSort={handleSort} />
           </div>
         </section>
 

@@ -5,8 +5,51 @@
     border-right: var(--table-border);
 }
 
-.user-table.grid>span {
+.user-table__row__data,
+.user-table__row__data__actions,
+.user-table__row__data--full-size {
     padding: 8px 4px;
     border-left: var(--table-border);
     border-bottom: var(--table-border);
+}
+
+.user-table__row__data.header {
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+.user-table__row__data__actions {
+    text-align: end;
+}
+
+.user-table__row__data__actions>span {
+    padding: 5px 8px;
+    border: 1px solid darkgray;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.user-table__row__data__actions>span:hover {
+    background-color: lightgray;
+    color: black;
+}
+
+.user-table__row__data__actions>span:not(:last-child) {
+    margin-right: 5px;
+}
+
+.user-table__row__data--full-size {
+    grid-column-start: 1;
+    grid-column-end: 7;
+    background-color: #eff0dfd2;
+}
+
+.detailed-row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dotted;
+}
+
+.detailed-row__key {
+    text-transform: capitalize;
 }
