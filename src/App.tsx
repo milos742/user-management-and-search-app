@@ -52,12 +52,11 @@ class App extends Component<{}, AppState> {
       return <Spinner />;
     }
 
-    const handleFilterChange = ({ filterBy, filterTerm, filterCaseSensitive }: { filterBy: string[], filterTerm: string, filterCaseSensitive: boolean }) => {
+    const handleFilterChange = (filters: { filterBy: string[], filterTerm: string, filterCaseSensitive: boolean }) => {
       this.setState(() => (
         {
-          filterBy,
-          filterTerm,
-          filterCaseSensitive,
+          // remove undefined values
+          ...JSON.parse(JSON.stringify(filters))
         }
       ))
     }
@@ -66,7 +65,10 @@ class App extends Component<{}, AppState> {
       // filter if filterBy exists
       const term = this.state.filterCaseSensitive ? this.state.filterTerm : this.state.filterTerm.toLowerCase();
       return users.filter(user => {
-        return this.state.filterBy.some((field) => user[field].includes(term));
+        return this.state.filterBy.some((field) => {
+          const fieldValue = this.state.filterCaseSensitive ? user[field] : user[field].toLowerCase();
+          return fieldValue.includes(term);
+        });
       });
     }
 
